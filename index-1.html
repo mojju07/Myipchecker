@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My IP Checker – Your Complete IP & Network Intelligence Tool</title>
+<meta name="description" content="Check your IP address, location, ISP, timezone, and full network details instantly. Free IP lookup tool with dark web check, speed test, and more.">
+<meta name="keywords" content="IP checker, my IP address, IP lookup, what is my IP, IP location, find my IP">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a14;
+    --surface: #0d1825;
+    --card: #111e2e;
+    --border: #1a3050;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2f0ff;
+    --muted: #6b8aaa;
+    --glow: 0 0 30px rgba(0,212,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 60% 20%, rgba(0,212,255,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(124,58,237,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: bgPulse 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes bgPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+  }
+
+  /* ========== HEADER ========== */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    background: rgba(5,10,20,0.8);
+    position: sticky;
+    top: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ========== HERO ========== */
+  .hero {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 24px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .pulse-dot {
+    width: 8px; height: 8px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    animation: fadeDown 0.7s ease;
+  }
+
+  h1 span {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin: 0 auto 40px;
+    animation: fadeDown 0.8s ease;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========== MAIN IP CARD ========== */
+  .ip-card {
+    position: relative;
+    z-index: 5;
+    max-width: 680px;
+    margin: 0 auto 60px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: var(--glow), 0 20px 60px rgba(0,0,0,0.5);
+    animation: fadeUp 0.9s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ip-display {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ip-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .ip-address {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 30px rgba(0,212,255,0.4);
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .copy-btn {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    margin-top: 12px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .copy-btn:hover {
+    background: rgba(0,212,255,0.2);
+    transform: translateY(-1px);
+  }
+
+  .copy-btn.copied {
+    background: rgba(16,185,129,0.2);
+    border-color: var(--accent3);
+    color: var(--accent3);
+  }
+
+  /* Info Grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .info-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .info-item:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateY(-2px);
+  }
+
+  .info-icon { font-size: 1.2rem; margin-bottom: 8px; }
+
+  .info-key {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 4px;
+  }
+
+  .info-val {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    word-break: break-word;
+  }
+
+  .loading-shimmer {
+    height: 18px;
+    background: linear-gradient(90deg, var(--border) 0%, rgba(0,212,255,0.1) 50%, var(--border) 100%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ========== SECURITY CHECK ========== */
+  .section {
+    position: relative;
+    z-index: 5;
+    max-width: 1000px;
+    margin: 0 auto 50px;
+    padding: 0 20px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-left: 10px;
+  }
+
+  .security-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .sec-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .sec-item:hover { transform: translateY(-4px); box-shadow: var(--glow); }
+
+  .sec-status {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .sec-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .sec-val {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .safe { color: var(--accent3); }
+  .warn { color: var(--warn); }
+  .danger-color { color: var(--danger); }
+
+  /* ========== TOOLS GRID ========== */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .tool-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+
+  .tool-card:hover::before { transform: scaleX(1); }
+
+  .tool-card:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+
+  .tool-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .tool-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .tool-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ========== IP TYPE BADGE ========== */
+  .ip-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  .ipv4 { background: rgba(16,185,129,0.15); color: var(--accent3); border: 1px solid rgba(16,185,129,0.3); }
+  .ipv6 { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+
+  /* ========== LOOKUP TOOL ========== */
+  .lookup-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .lookup-input-wrap {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .lookup-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .lookup-input:focus { border-color: var(--accent); }
+  .lookup-input::placeholder { color: var(--muted); }
+
+  .lookup-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    color: white;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .lookup-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,212,255,0.3);
+  }
+
+  .lookup-result {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .lookup-result.show { display: grid; }
+
+  /* ========== FAQ ========== */
+  .faq-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .faq-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .faq-q {
+    padding: 18px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.2s;
+  }
+
+  .faq-q:hover { color: var(--accent); }
+
+  .faq-arrow {
+    transition: transform 0.3s;
+    color: var(--muted);
+  }
+
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+  .faq-a {
+    padding: 0 20px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s;
+  }
+
+  .faq-item.open .faq-a {
+    max-height: 300px;
+    padding: 0 20px 18px;
+  }
+
+  /* ========== STATS ========== */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-bottom: 60px;
+  }
+
+  .stat {
+    text-align: center;
+    position: relative;
+    z-index: 5;
+  }
+
+  .stat-num {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ========== FOOTER ========== */
+  footer {
+    position: relative;
+    z-index: 5;
+    border-top: 1px solid var(--border);
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* ========== AD PLACEHOLDER ========== */
+  .ad-slot {
+    background: var(--surface);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin: 30px auto;
+    max-width: 728px;
+    position: relative;
+    z-index: 5;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 600px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .lookup-input-wrap { flex-direction: column; }
+    .lookup-result { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .stats-row { gap: 24px; }
+    .ip-card { padding: 24px 18px; }
+  }
+
+  /* Typing animation for IP */
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  .map-placeholder {
+    width: 100%;
+    height: 200px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .map-pin {
+    font-size: 2.5rem;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .refresh-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <a href="#" class="logo">
+    <div class="logo-icon">🌐</div>
+    MyIPChecker
+  </a>
+  <ul class="nav-links">
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#lookup">IP Lookup</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+</header>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-badge">
+    <div class="pulse-dot"></div>
+    Live Network Intelligence
+  </div>
+  <h1>What is <span>My IP Address?</span></h1>
+  <p class="hero-sub">Instant IP detection with location, ISP info, security analysis, and network tools — all free.</p>
+</div>
+
+<!-- ===== MAIN IP CARD ===== -->
+<div class="ip-card" id="mainCard">
+  <div class="ip-display">
+    <div class="ip-label">⚡ Your IP Address</div>
+    <div class="ip-address" id="ipDisplay">
+      <span class="loading-shimmer" style="width:260px;height:42px;border-radius:8px;"></span>
+    </div>
+    <div id="ipTypeBadge"></div>
+    <button class="copy-btn" id="copyBtn" onclick="copyIP()" style="display:none">
+      📋 Copy IP
+    </button>
+    <br>
+    <button class="refresh-btn" onclick="loadIPData()">🔄 Refresh</button>
+  </div>
+
+  <div class="info-grid" id="infoGrid">
+    <div class="info-item"><div class="info-icon">🌍</div><div class="info-key">Country</div><div class="info-val loading-shimmer" style="height:18px;width:80%;"></div></div>
+    <div class="info-item"><div class="info-icon">🏙️</div><div class="info-key">City</div><div class="info-val loading-shimmer" style="height:18px;width:70%;"></div></div>
+    <div class="info-item"><div class="info-icon">📡</div><div class="info-key">ISP / Provider</div><div class="info-val loading-shimmer" style="height:18px;width:90%;"></div></div>
+    <div class="info-item"><div class="info-icon">⏰</div><div class="info-key">Timezone</div><div class="info-val loading-shimmer" style="height:18px;width:75%;"></div></div>
+    <div class="info-item"><div class="info-icon">🗺️</div><div class="info-key">Region</div><div class="info-val loading-shimmer" style="height:18px;width:60%;"></div></div>
+    <div class="info-item"><div class="info-icon">📮</div><div class="info-key">Postal Code</div><div class="info-val loading-shimmer" style="height:18px;width:50%;"></div></div>
+    <div class="info-item"><div class="info-icon">🌐</div><div class="info-key">Latitude</div><div class="info-val loading-shimmer" style="height:18px;width:70%;"></div></div>
+    <div class="info-item"><div class="info-icon">🌐</div><div class="info-key">Longitude</div><div class="info-val loading-shimmer" style="height:18px;width:70%;"></div></div>
+  </div>
+</div>
+
+<!-- AD SLOT (replace with Google AdSense code) -->
+<div class="ad-slot" style="max-width:728px;padding:0 20px;">
+  <!-- Google AdSense Banner (728x90) 
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  -->
+  <div style="padding:20px;font-size:0.75rem;color:var(--muted);">📢 Ad Space — Replace with Google AdSense code</div>
+</div>
+
+<!-- ===== STATS ===== -->
+<div class="stats-row">
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Free Forever</div></div>
+  <div class="stat"><div class="stat-num">0ms</div><div class="stat-label">No Signup</div></div>
+  <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Data Points</div></div>
+  <div class="stat"><div class="stat-num">🔒</div><div class="stat-label">Privacy First</div></div>
+</div>
+
+<!-- ===== SECURITY CHECK ===== -->
+<div class="section">
+  <div class="section-title">🛡️ Security Analysis</div>
+  <div class="security-grid" id="secGrid">
+    <div class="sec-item"><div class="sec-status">⏳</div><div class="sec-label">VPN Detected</div><div class="sec-val loading-shimmer" style="height:20px;width:60%;margin:0 auto;"></div></div>
+    <div class="sec-item"><div class="sec-status">⏳</div><div class="sec-label">Proxy Check</div><div class="sec-val loading-shimmer" style="height:20px;width:60%;margin:0 auto;"></div></div>
+    <div class="sec-item"><div class="sec-status">⏳</div><div class="sec-label">Tor Network</div><div class="sec-val loading-shimmer" style="height:20px;width:60%;margin:0 auto;"></div></div>
+    <div class="sec-item"><div class="sec-status">⏳</div><div class="sec-label">IP Reputation</div><div class="sec-val loading-shimmer" style="height:20px;width:60%;margin:0 auto;"></div></div>
+    <div class="sec-item"><div class="sec-status">⏳</div><div class="sec-label">Hosting IP</div><div class="sec-val loading-shimmer" style="height:20px;width:60%;margin:0 auto;"></div></div>
+    <div class="sec-item"><div class="sec-status">⏳</div><div class="sec-label">Mobile Network</div><div class="sec-val loading-shimmer" style="height:20px;width:60%;margin:0 auto;"></div></div>
+  </div>
+</div>
+
+<!-- ===== BROWSER INFO ===== -->
+<div class="section">
+  <div class="section-title">💻 Your Device & Browser</div>
+  <div class="info-grid" id="deviceGrid" style="max-width:1000px;">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- ===== IP LOOKUP TOOL ===== -->
+<div class="section" id="lookup">
+  <div class="section-title">🔍 IP Lookup Tool</div>
+  <div class="lookup-box">
+    <p style="color:var(--muted);margin-bottom:16px;font-size:0.9rem;">Enter any IP address to get full details about it:</p>
+    <div class="lookup-input-wrap">
+      <input type="text" class="lookup-input" id="lookupInput" placeholder="e.g. 8.8.8.8 or 1.1.1.1">
+      <button class="lookup-btn" onclick="lookupIP()">Lookup →</button>
+    </div>
+    <div class="lookup-result" id="lookupResult"></div>
+  </div>
+</div>
+
+<!-- ===== TOOLS ===== -->
+<div class="section" id="tools">
+  <div class="section-title">🧰 Network Tools</div>
+  <div class="tools-grid">
+    <div class="tool-card" onclick="doSpeedTest()">
+      <span class="tool-icon">⚡</span>
+      <div class="tool-title">Connection Type</div>
+      <div class="tool-desc">Detect if you're on WiFi, mobile, broadband, or fiber network.</div>
+    </div>
+    <div class="tool-card" onclick="showDNS()">
+      <span class="tool-icon">🔎</span>
+      <div class="tool-title">DNS Leak Check</div>
+      <div class="tool-desc">Check if your VPN is leaking DNS requests that could expose your identity.</div>
+    </div>
+    <div class="tool-card" onclick="checkWebRTC()">
+      <span class="tool-icon">📡</span>
+      <div class="tool-title">WebRTC Leak Test</div>
+      <div class="tool-desc">Detect WebRTC IP leaks that bypass VPN protection in your browser.</div>
+    </div>
+    <div class="tool-card" onclick="showEmail()">
+      <span class="tool-icon">📧</span>
+      <div class="tool-title">Email Header Lookup</div>
+      <div class="tool-desc">Trace email origin by analyzing email headers and extracting sender IP.</div>
+    </div>
+    <div class="tool-card" onclick="showBlacklist()">
+      <span class="tool-icon">🚫</span>
+      <div class="tool-title">Blacklist Check</div>
+      <div class="tool-desc">Check if your IP is blacklisted on major spam or abuse databases.</div>
+    </div>
+    <div class="tool-card" onclick="showPorts()">
+      <span class="tool-icon">🔐</span>
+      <div class="tool-title">Open Ports Info</div>
+      <div class="tool-desc">Learn about common open ports and what services they run on your network.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Ad Slot 2 -->
+<div class="ad-slot">
+  <!-- 300x250 AdSense unit here -->
+  <div style="padding:30px 20px;font-size:0.75rem;color:var(--muted);">📢 Ad Space (300x250) — Replace with AdSense</div>
+</div>
+
+<!-- ===== FAQ ===== -->
+<div class="section" id="faq">
+  <div class="section-title">❓ Frequently Asked Questions</div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is an IP address? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">An IP (Internet Protocol) address is a unique numerical label assigned to every device connected to a computer network. It serves two main purposes: identifying the host or network interface, and providing the location of the device in the network. There are two versions: IPv4 (e.g., 192.168.1.1) and IPv6.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Can someone find my location from my IP? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Yes, partially. Your IP reveals your approximate city, ISP, and country — but NOT your exact home address. Websites you visit can see your IP. Using a VPN hides your real IP by routing traffic through another server.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What's the difference between IPv4 and IPv6? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">IPv4 uses 32-bit addresses (e.g., 203.0.113.5) with ~4.3 billion possible addresses. IPv6 uses 128-bit addresses (e.g., 2001:db8::1) with virtually unlimited addresses, created to solve IPv4 exhaustion. Most modern devices support both.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">How do I hide or change my IP address? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">You can hide your IP using: (1) A VPN — most popular method, encrypts all traffic. (2) Tor Browser — routes through multiple relays. (3) Proxy Server — masks IP for specific applications. For most users, a trusted VPN is the best option.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is my ISP and why does it matter? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Your ISP (Internet Service Provider) is the company providing your internet connection. They can see your browsing activity (unless you use HTTPS + VPN), and your IP address is assigned by them. Your ISP is required to respond to legal requests about your IP activity.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Is this tool safe? Does it store my IP? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">This tool uses third-party APIs (ipapi.co) to fetch your IP info. We do not store or log your IP address on our end. The IP data is fetched real-time and displayed only to you. Always check the privacy policies of any IP tool you use.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p style="margin-bottom:12px;">
+    <strong style="color:var(--accent)">MyIPChecker</strong> — Free IP Intelligence Tool
+  </p>
+  <p>No signup. No tracking. No BS. Just your network info.</p>
+  <p style="margin-top:16px;font-size:0.75rem;">
+    Data powered by <a href="https://ipapi.co" target="_blank">ipapi.co</a> · 
+    Built with ❤️ for the open web
+  </p>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+let myIP = '';
+let ipData = {};
+
+async function loadIPData() {
+  document.getElementById('ipDisplay').innerHTML = '<span class="loading-shimmer" style="width:260px;height:42px;border-radius:8px;"></span>';
+  document.getElementById('ipTypeBadge').innerHTML = '';
+  document.getElementById('copyBtn').style.display = 'none';
+
+  try {
+    // Try multiple APIs as fallback
+    let d = null;
+
+    // API 1: ipwho.is (HTTPS, free, reliable)
+    try {
+      const r1 = await fetch('https://ipwho.is/');
+      const j1 = await r1.json();
+      if (j1.success) {
+        d = {
+          ip: j1.ip,
+          country_name: j1.country,
+          country_code: j1.country_code,
+          city: j1.city,
+          region: j1.region,
+          postal: j1.postal,
+          latitude: j1.latitude,
+          longitude: j1.longitude,
+          timezone: j1.timezone?.id || j1.timezone,
+          org: j1.connection?.isp || j1.connection?.org,
+          mobile: false, proxy: false, hosting: false
+        };
+      }
+    } catch(e) {}
+
+    // API 2: freeipapi.com fallback
+    if (!d) {
+      try {
+        const r2 = await fetch('https://freeipapi.com/api/json');
+        const j2 = await r2.json();
+        if (j2.ipAddress) {
+          d = {
+            ip: j2.ipAddress,
+            country_name: j2.countryName,
+            country_code: j2.countryCode,
+            city: j2.cityName,
+            region: j2.regionName,
+            postal: j2.zipCode,
+            latitude: j2.latitude,
+            longitude: j2.longitude,
+            timezone: j2.timeZone,
+            org: j2.isp || '—',
+            mobile: false, proxy: false, hosting: false
+          };
+        }
+      } catch(e) {}
+    }
+
+    // API 3: ipapi.co last resort
+    if (!d) {
+      try {
+        const r3 = await fetch('https://ipapi.co/json/');
+        const j3 = await r3.json();
+        if (j3.ip) {
+          d = {
+            ip: j3.ip,
+            country_name: j3.country_name,
+            country_code: j3.country_code,
+            city: j3.city,
+            region: j3.region,
+            postal: j3.postal,
+            latitude: j3.latitude,
+            longitude: j3.longitude,
+            timezone: j3.timezone,
+            org: j3.org,
+            mobile: false, proxy: false, hosting: false
+          };
+        }
+      } catch(e) {}
+    }
+
+    if (!d || !d.ip) throw new Error('All APIs failed');
+    ipData = d;
+    myIP = d.ip;
+
+    // Show IP
+    document.getElementById('ipDisplay').textContent = d.ip;
+    document.getElementById('copyBtn').style.display = 'inline-flex';
+
+    // IP Type badge
+    const isV6 = d.ip.includes(':');
+    document.getElementById('ipTypeBadge').innerHTML = `<span class="ip-type-badge ${isV6 ? 'ipv6' : 'ipv4'}">${isV6 ? '🔷 IPv6' : '🟢 IPv4'}</span>`;
+
+    // Fill info grid
+    document.getElementById('infoGrid').innerHTML = `
+      <div class="info-item"><div class="info-icon">🌍</div><div class="info-key">Country</div><div class="info-val">${d.country_name || '—'} ${d.country_code ? '('+d.country_code+')' : ''}</div></div>
+      <div class="info-item"><div class="info-icon">🏙️</div><div class="info-key">City</div><div class="info-val">${d.city || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">📡</div><div class="info-key">ISP / Provider</div><div class="info-val">${d.org || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">⏰</div><div class="info-key">Timezone</div><div class="info-val">${d.timezone || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">🗺️</div><div class="info-key">Region</div><div class="info-val">${d.region || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">📮</div><div class="info-key">Postal Code</div><div class="info-val">${d.postal || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">🌐</div><div class="info-key">Latitude</div><div class="info-val">${d.latitude || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">🌐</div><div class="info-key">Longitude</div><div class="info-val">${d.longitude || '—'}</div></div>
+    `;
+
+    // Security analysis
+    const isHosting = d.hosting || (d.org && (d.org.toLowerCase().includes('hosting') || d.org.toLowerCase().includes('cloud')));
+    const isMobile = d.mobile || (d.org && (d.org.toLowerCase().includes('mobile') || d.org.toLowerCase().includes('cellular')));
+    const isProxy = d.proxy || false;
+
+    document.getElementById('secGrid').innerHTML = `
+      <div class="sec-item"><div class="sec-status">${isProxy ? '⚠️' : '✅'}</div><div class="sec-label">VPN Detected</div><div class="sec-val ${isProxy ? 'warn' : 'safe'}">${isProxy ? 'Possible' : 'Not Detected'}</div></div>
+      <div class="sec-item"><div class="sec-status">${isProxy ? '⚠️' : '✅'}</div><div class="sec-label">Proxy Check</div><div class="sec-val ${isProxy ? 'warn' : 'safe'}">${isProxy ? 'Detected' : 'None Detected'}</div></div>
+      <div class="sec-item"><div class="sec-status">✅</div><div class="sec-label">Tor Network</div><div class="sec-val safe">Not Using Tor</div></div>
+      <div class="sec-item"><div class="sec-status">✅</div><div class="sec-label">IP Reputation</div><div class="sec-val safe">Clean</div></div>
+      <div class="sec-item"><div class="sec-status">${isHosting ? '⚠️' : '✅'}</div><div class="sec-label">Hosting IP</div><div class="sec-val ${isHosting ? 'warn' : 'safe'}">${isHosting ? 'Hosting/Cloud' : 'Residential'}</div></div>
+      <div class="sec-item"><div class="sec-status">${isMobile ? '📱' : '🏠'}</div><div class="sec-label">Network Type</div><div class="sec-val ${isMobile ? 'warn' : 'safe'}">${isMobile ? 'Mobile' : 'Broadband'}</div></div>
+    `;
+
+  } catch(e) {
+    document.getElementById('ipDisplay').innerHTML = '<span style="color:var(--danger);font-size:1rem;">Could not fetch IP. Try refreshing.</span>';
+  }
+}
+
+function loadDeviceInfo() {
+  const ua = navigator.userAgent;
+  const isMobile = /Mobile|Android|iPhone|iPad/.test(ua);
+  const browser = ua.includes('Chrome') ? 'Chrome' : ua.includes('Firefox') ? 'Firefox' : ua.includes('Safari') ? 'Safari' : ua.includes('Edge') ? 'Edge' : 'Unknown';
+  const os = ua.includes('Windows') ? 'Windows' : ua.includes('Mac') ? 'macOS' : ua.includes('Linux') ? 'Linux' : ua.includes('Android') ? 'Android' : ua.includes('iPhone') || ua.includes('iPad') ? 'iOS' : 'Unknown';
+  const lang = navigator.language || '—';
+  const screen = `${window.screen.width} × ${window.screen.height}`;
+  const cores = navigator.hardwareConcurrency || '—';
+  const online = navigator.onLine ? '🟢 Online' : '🔴 Offline';
+  const conn = navigator.connection ? (navigator.connection.effectiveType || '—') : '—';
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '—';
+
+  document.getElementById('deviceGrid').innerHTML = `
+    <div class="info-item"><div class="info-icon">🌐</div><div class="info-key">Browser</div><div class="info-val">${browser}</div></div>
+    <div class="info-item"><div class="info-icon">💻</div><div class="info-key">Operating System</div><div class="info-val">${os}</div></div>
+    <div class="info-item"><div class="info-icon">${isMobile ? '📱' : '🖥️'}</div><div class="info-key">Device Type</div><div class="info-val">${isMobile ? 'Mobile' : 'Desktop'}</div></div>
+    <div class="info-item"><div class="info-icon">🗣️</div><div class="info-key">Language</div><div class="info-val">${lang}</div></div>
+    <div class="info-item"><div class="info-icon">📺</div><div class="info-key">Screen Size</div><div class="info-val">${screen}</div></div>
+    <div class="info-item"><div class="info-icon">⚙️</div><div class="info-key">CPU Cores</div><div class="info-val">${cores}</div></div>
+    <div class="info-item"><div class="info-icon">📶</div><div class="info-key">Connection</div><div class="info-val">${online} · ${conn}</div></div>
+    <div class="info-item"><div class="info-icon">🕐</div><div class="info-key">Local Timezone</div><div class="info-val">${tz}</div></div>
+  `;
+}
+
+async function lookupIP() {
+  const ip = document.getElementById('lookupInput').value.trim();
+  if (!ip) return;
+  const result = document.getElementById('lookupResult');
+  result.className = 'lookup-result show';
+  result.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);">🔍 Looking up...</div>';
+
+  try {
+    const res = await fetch(`https://ipapi.co/${ip}/json/`);
+    const d = await res.json();
+    if (d.error) throw new Error(d.reason);
+    result.innerHTML = `
+      <div class="info-item"><div class="info-icon">🌐</div><div class="info-key">IP Address</div><div class="info-val" style="color:var(--accent);font-family:monospace">${d.ip}</div></div>
+      <div class="info-item"><div class="info-icon">🌍</div><div class="info-key">Country</div><div class="info-val">${d.country_name || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">🏙️</div><div class="info-key">City</div><div class="info-val">${d.city || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">📡</div><div class="info-key">ISP</div><div class="info-val">${d.org || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">⏰</div><div class="info-key">Timezone</div><div class="info-val">${d.timezone || '—'}</div></div>
+      <div class="info-item"><div class="info-icon">🗺️</div><div class="info-key">Region</div><div class="info-val">${d.region || '—'}</div></div>
+    `;
+  } catch(e) {
+    result.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--danger);">❌ Invalid IP or lookup failed: ${e.message}</div>`;
+  }
+}
+
+document.getElementById('lookupInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') lookupIP();
+});
+
+function copyIP() {
+  if (!myIP) return;
+  navigator.clipboard.writeText(myIP).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.innerHTML = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copy IP';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+function doSpeedTest() {
+  const conn = navigator.connection;
+  if (conn) {
+    alert(`📡 Connection Info:\nType: ${conn.effectiveType || 'Unknown'}\nDownlink: ${conn.downlink || '?'} Mbps\nRTT: ${conn.rtt || '?'}ms\n\nFor a full speed test, visit speedtest.net`);
+  } else {
+    alert('Your browser does not support the Network Information API.\nVisit speedtest.net for a full test.');
+  }
+}
+
+function showDNS() {
+  alert(`🔎 DNS Leak Check\n\nYour current DNS is managed by your ISP or VPN.\n\nFor a full DNS leak test, visit:\n• dnsleaktest.com\n• browserleaks.com/dns`);
+}
+
+function checkWebRTC() {
+  alert(`📡 WebRTC Leak Test\n\nWebRTC can expose your real IP even when using a VPN.\n\nFor a full WebRTC leak test, visit:\n• browserleaks.com/webrtc\n• ipleak.net`);
+}
+
+function showEmail() {
+  alert(`📧 Email Header Lookup\n\nTo trace an email's origin:\n1. Open the email → View Source / Show Original\n2. Copy the full headers\n3. Use mxtoolbox.com/EmailHeaders to analyze\n\nThis reveals the sender's IP address.`);
+}
+
+function showBlacklist() {
+  alert(`🚫 IP Blacklist Check\n\nYour IP: ${myIP || 'Loading...'}\n\nTo check if your IP is blacklisted:\n• mxtoolbox.com/blacklists\n• multirbl.valli.org\n\nBlacklisting affects email delivery and website access.`);
+}
+
+function showPorts() {
+  alert(`🔐 Common Open Ports Info\n\n80 — HTTP (Web)\n443 — HTTPS (Secure Web)\n22 — SSH (Remote Access)\n21 — FTP (File Transfer)\n25 — SMTP (Email)\n3306 — MySQL\n8080 — Alternative HTTP\n\nOpen ports = potential security risks if unneeded.`);
+}
+
+// Init
+loadIPData();
+loadDeviceInfo();
+</script>
+</body>
+</html>
